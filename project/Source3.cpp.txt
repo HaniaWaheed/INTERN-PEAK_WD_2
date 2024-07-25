@@ -1,0 +1,21 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main()
+{	
+	cout << "Hye, I am Hania Waheed" << endl << "My Roll Number is 22i-0982" << endl << "My Degree is BS(CS)" << endl;
+	cout << setw(15) << "___" << setw(56) << "___" << endl;
+	cout << setw(6) << ".-." << setw(6) << "(" << setw(4) << ")" << setw(52) << "(" << setw(4) << ")" << endl;
+	cout << setw(3) << "(" << setw(4) << "__)" << setw(6) << "|" << setw(2) << "|" << setw(8) << ".__." << setw(7) << "___" << setw(5) << "___" << setw(8) << ".__." << setw(12) << ".-.." << setw(10) << ".---." << setw(4) << "|" << setw(2) << "|" << setw(6) << "___" << endl;	
+	cout << setw(7) << "(''\")" << setw(6) << "|" << setw(2) << "|" << setw(4) << "/" << setw(5) << "\\" << setw(3) << "(" << setw(5) << ")(" << setw(4) << ")" << setw(3) << "/" << setw(5) << "\\" << setw(7) << "/" << setw(5) << "\\" << setw(4) << "/" << setw(4) << ".-," << setw(2) << "\\" << setw(3) << "|" << setw(2) << "|" << setw(3) << "(" << setw(4) << ")" << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "|" << setw(5) << ".-." << setw(2) << ";" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(5) << ".-." << setw(2) << ";" << setw(5) << "'" << setw(4) << ".-." << setw(3) << ";" << setw(5) << "(__)" << setw(2) << ";" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "'" << setw(2) << "/" << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(3) << "|" << setw(2) << "|" << setw(2) << "|" << setw(5) << "|" << setw(2) << "|" << setw(3) << "." << setw(2) << "|" << setw(6) << ".''" << setw(3) << "|" << setw(3) << "|" << setw(4) << "|,'" << setw(2) << "/" << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(4) << "|/" << setw(3) << "|" << setw(5) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) <<"/" << setw(4) << ".'|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "." << setw(4) << "'." << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(3) << "'" << setw(4) << "_.'" << setw(5) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(2) << "|" << setw(2) << "/" << setw(3) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(3) << "'." << setw(2) << "\\" << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "|" << setw(2) << "'" << setw(3) << "|" << setw(2) << "|" << setw(3) << "'" << setw(2) << "'" << setw(3) << "'" << setw(2) << "'" << setw(3) << "|" << setw(7) << ".'.-." << setw(5) << "|" << setw(2) << "|" << setw(3) << "'" << setw(2) << "|" << setw(2) << ";" << setw(2) << "|" << setw(3) << ";" << setw(2) << "|" << setw(3) << "|" << setw(2) << "|" << setw(4) << "\\" << setw(2) << "\\" << endl;
+	cout << setw(4) << "|" << setw(2) << "|" << setw(7) << "|" << setw(2) << "|" << setw(3) << "'" << setw(5) << "'-'" << setw(2) << "/" << setw(4) << "\\" << setw(3) << "''" << setw(2) << "/" << setw(4) << "'" << setw(5) << "'-'" << setw(2) << "/" << setw(5) << "|" << setw(4) << "'-'" << setw(3) << "'" << setw(2) << "'" << setw(4) << "'-'" << setw(3) << "|" << setw(3) << "|" << setw(2) << "|" << setw(5) << "\\" << setw(2) << "." << endl;
+	cout << setw(7) << "(___)" << setw(9) << "(___)" << setw(8) << "'.__.'" << setw(9) << "'_.'" << setw(11) << "'.__.'" << setw(6) << "|" << setw(6) << "\\__.'" << setw(10) << "'.__.'_." << setw(5) << "(___" << setw(2) << ")" << setw(6) << "(___)" << endl;
+	cout << setw(50) << "|" << setw(2) << "|" << endl;
+	cout << setw(53) << "(___)" << endl;
+}

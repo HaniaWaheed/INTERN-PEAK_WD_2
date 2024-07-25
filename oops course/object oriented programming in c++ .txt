@@ -1,0 +1,632 @@
+object oriented programming in c++ course
+
+What is oop? and why we use it?
+It is principle of design and development font of programs using modular appproach.
+
+What is modular approach?
+when we don't using oops we are only done algrothim like we have input and give the output.
+
+oops have some principle like it help in real life, There are principles and we discuss below.
+
+Another major component in oops is class that represent a group of object which share community, propertied and relationship.
+c stands for class and the major component are 
+.Stream I/o
+.strong type
+.Inlining
+.Default argument values
+.parameter passing by refrence
+.OOP advantage
+
+OOP principle
+It is methodology characterized by 
+
+Encapsulation:
+It is a process of binding data members i.e variable, properties and member function into a single unit. It take real life problem.Example would be pharmacy.
+
+Abstraction:
+It refer to represent necessary features without including more details or explanation.it is technique that relies on separation of interfacce and implementation. Example would be laptop scheme.
+
+Inheritance:
+It is a mechanism of deriving a new class from old class is called inheritance.The old class is know as base class while new class is know as derived class or subclass.Example should be belong to parents.
+
+Polymorphism:
+It take more than one form. It help in operator overloading, function overloading and to concatenate two strings.
+
+c++ classes and objects:
+.Everything have classes with their attributees and methods
+.Attributes and method are  variables and functions belong to class. They are also called as "class member". 
+.Class is user-defined type that use in our program works an object constructor or "blue print" for creating object.
+
+Creating a class:
+classMyClass{                    //Class name
+public:                           //acess specifier
+int myNum;                        //Attribute
+string myString;                  //Attribute
+};
+
+class Method:
+Eg.
+classStudent{
+public:
+//Declaration of state/Properties.
+string name;                   //instance variable.
+int rollNo;                    //instance variable
+static int age;                 //static variable
+//Declaration of Actions.
+void display(){             //Instance method.
+//method body.
+}
+};
+
+REAL LIFE EXAMPLES OF CLASSES AND OBJECTS:
+object: person
+
+Access specifiers:
+how it can access the attributes and methods outside the class.There are three acess specifiers:
+
+public: members are accessible from outside the class.
+
+private: members cannot be accessed(or viewed) from outside the class.
+
+protected: members cannot be accessed outside the cclass, however it can be accessed in inheritance classes.
+By default all members of class are private if you don't specify any access specifically, it would become private. 
+
+Acess Specifiers:
+classMyClass{
+public:                         //Public access specifier
+int x;                          //public attribute
+private:                        //Private access specifier
+int y;                          //private attribute
+};
+
+int main(){
+MyClass myObj;
+myObj.x=5;                      //Allowed (public)
+myObj.y=5;                      //Not Allowed (private) //Compiler error
+return 0;
+}
+
+Default Copying:
+When we have an object i.e my birthday we use assignmnet operator to copy to another object .
+data d1= my_birthday;              //initialization by copy
+data d2{my_birthday};              //initialize by copy
+The copy of class object is a copy of each member.
+
+Static Members of a c++ class:
+when we declare member of class as static it means no matter how many objects are created there is only one copy of static member.It shared by all objects of class.All static data is initialized to zero when first object is created, if no other intialization is present.It always initialized outside the class and we use the scope resolution operator :: where the class belongs to.
+
+Eg:
+class Box{
+public:
+static int objectCount;
+};
+//Initialize static member or class Box
+int Box::objectCount =0;
+
+Static Function Members:
+It independent of any particular object of the class.A static member function can be called even if no object of class exist and static function are accessed using only class name and the scope resolution operator ::. It can access static data member, other sttaic member function and other function from outside the class.It have class scope and don't have acces to pointer of class.
+
+Static Function Members:
+class Box{
+public:
+static int objectCount;
+static int getCount(){
+return length;
+}
+private:
+double length;                 //Length of a box
+};
+
+Box:: getCount();
+
+Passing and Returning objects in c++:
+we can pass class objects as and also return them from a function the same way we pass and return the variables.
+
+Passing an object as argumnet:
+To pass an object an argumnet we write the object name as argument while calling the function the same way we do it for other variables.
+
+syntax:
+fun(object_name); 
+Example:
+class example{                  Example E1,E2;
+public:                         E1.a = 5;
+int a;                          E2.a = 10;
+void add(example E)             E2.add(E1);
+{                               cout << E1.a <<E2.a << "\n";
+a = a + E.a;
+}
+};
+
+RETURNING AN OBJECT AS ARGUMNET:
+class Example{
+public:                                   Example E1,E2,E3;
+int a;                                    E1.a=5;
+Example add(Example Ea,example Eb){       E2.a=10;
+Example Ec;                               E3= E3.add(E1,E2);
+Ec.a = Ec.a+ Ea.a +Eb.a;                  cout << E3.a << "\n";
+return Ec;
+}
+};
+
+the only flaw in oops language is it created friend class and friend function.
+
+Friend Function and classes:
+A friend class can access private and protected members of other class in which it is declared as friend.
+
+classA{                             classB{
+private:                            private:
+int a;                              int b;
+
+public:                             public:
+A(){                                void showA(A& x){
+a=0;                                cout << x.a;
+}                                   }
+friend classB; //Friend Class       };
+};       
+ 
+Friend Function:
+Friend Function can also given special grant to access private and protected members.A true function can be:
+a) A method of another class              class B{
+                                           private:
+b)A global function                        int b;
+                                           public:
+classA{                                    void showA(A&x){
+private:                                   cout<< x.a; 
+int a;                                     }
+friend voidB::showA(A&x);                  };
+};
+
+CONST MEMBER FUNCTIONS IN C++:
+An object declared as const cannot be modified and hence cannot be change.You can initialize like const a a=b; b is an object of another class A and another method is class A{
+void f(a){
+const void f2(a){
+it cannot change any attribute of it and if there is any change it can occur in compiler error.
+eg.
+const clA cba;
+When const functions are not allowed to modify the obj on which they are called on any type of object, const obj as well as non-const objects.
+
+Pointers to class members:
+it used to point to class objects:
+Class obj:
+class* otr;
+ptr = &obj;
+cout<< obj.a;
+cout<<ptr ->a;
+
+POINTERS TO CLASS MEMBERS:
+POINtERs to data MEMBERS:
+class dara{                         Data d,*dp;
+public:                             dp = &d; //pointer to object
+int a;                              int Data::*ptr=&Data::a;
+void print(){                       //pointer to data member'a'
+cout<<"a is"<<a;                   d.*ptr =10;
+}                                  d.print();
+};                                 dp->*ptr=20;
+                                   dp->print();
+
+Pointer to member functions of class:
+Pointers can be used to point class member functions.
+
+Syntax:
+return_type(class_name::*ptr_name)(argument_type)=&class_name ::function_name;
+
+eg:
+classData{
+public:
+int f(float){
+return 1;
+}
+};
+
+int (Data::*fp1)(float)=&Data::f;
+
+C++ Constructor:
+
+.A constructor in c++ is special method of class that is automatically called when an object is created i.e public.
+.It used to initialized obj attributes.
+.Constructor have same name as that of class.
+.They are must to be make public.
+.Constructor don't have return value.
+.Constructor also take parameter just like function and be useful for setting initial values of attributes.
+.As function,constructors are also allowed to define outside.
+.If we don't define a constructor in class, c++ compilers generate a default constructor for us which takes no parameter as input and has an empty body.
+
+Constructor syntax:
+class myClass{
+public:
+myclass(){
+//constructor
+}
+};
+
+Type of Constructor:
+There are three type of constructor:
+.Default Constructor
+.Parameterized Constructor
+.Copy Constructor
+
+Default Constructor:
+it have one having an empty  parameter list.
+Syntax:
+class A{
+public:
+A(){
+//Default constructor
+}
+};
+if we don't define explicity, compiler have empty default constructor an inline public member of it's class.
+
+Parameterized Constructor:
+Constructors with parameters.
+syntax:
+class A(){
+int a,b;
+public:
+A(int x,int y){
+a= x; b =y;
+}
+};
+Parameterized Constructors are preferred to initialize data members.
+
+Copy Constructor:
+Copy any data of one object to another.
+syntax:
+class Example{
+public:
+Example( const Example &); //Declare copy constructor.
+//....
+};
+
+int main(){
+}
+
+DESTRUCTORS:
+Destructor is member function which destruct or delete an object.
+Syntax:
+.Function is automatically invoked when object are destroyed.
+.Destructor does not have argument.
+.it cannot be declared static or const.
+.it should be declared in public section of the class.
+.You cannot access the address of destructor.
+.When object utomically goes out it can called the function.
+.There is only one destructor in the class.
+
+Order of Destruction:
+When obj goes out of the scope or deletd, the events would be follow like:
+.The destructor class is called and body of destructor is executed.
+.It are nonstatic member objects are called in reverse order which they appear in class declaration.
+
+C++ Inheritance:
+.It is a process in which one obj acquire all the properties and behavaiuor of it's parent obj automatically.
+.in such way, you can reuse, extend or modify the attributes and behaviours which you define in other class.
+.In c++, the class which inherits the members of another class is called derived class and the other class whose members are inherited is called base class.The derived class is specialized for the base class.
+
+Derived Classes:
+As the class derived from the base class.
+Syntax:
+class derived_class_name :: visibility-mode base_class_name {
+//body of derived class.
+}
+derived_class_name : It is the name of derived class.
+
+visibilty mode:It specifies the features of base class are publicly inherited or privately inherited.It can be public or private.
+
+Public,Protected and Privated Inheritance:
+Public inheritance makes public members of the base class public in the derived class, and  the protected members of the base class remain protected in derived class.
+Protected inheritance makes the public and  protected members of the base class protected  in the derived class.
+Private inheritance makes the public and protected members of the base class private in derived class.
+
+Visibility of Inherited Members:
+all would be protected and privated excepty private members are not inherited in base and derived class visibility.
+
+Types of Inheritance:
+.Single inheritance
+.Multiple inheritance.
+.Hierarchial inheritance.
+.Multilevel inheritance. we will discuss purpose only in multilevel inheritance.
+.Hybrid inheritance.
+
+Single Inheritance:
+It is defined as the inheritance in which a derived class is inherited from only base class.
+
+class Base{
+public:
+float salary = 50000;
+};
+class Derived; public Base{
+public:
+float bonus=2000;
+};
+Syntax:
+class Base{
+public:
+int mul(int a,int b){
+return a*b;
+}
+};
+class Derived:private Base{
+public:
+void f(int a, int b){
+return mul(a,b);
+}
+};
+
+Multilevel Inheritance:
+It is process of deriving a class from another derived class.Inheritance is transitive so last derived class acquires all members of all its base classes.
+
+class Base{
+public:
+float salary = 50000;
+};
+class Derived; public Base{
+public:
+float bonus=2000;
+};
+
+Multiple inheritance:
+It is process of deriving a new class which iinherits the attributes from two or more classes.
+Syntax:
+class D: visibility B-1,visibility B-2,.....{
+//body of class;
+}
+
+Ambiguity Resolution Of Inheritance:
+Ambiguity can occured in using the multiple inheritance when function with same name occurs in more than one base classes.
+class A{
+public:
+void fun(){
+cout<<"Class A"<<endl;
+}
+};
+class B{
+public:
+void fun(){
+cout<<"Class B"<<endl;
+}
+};
+class C:public A,public B{
+public:
+void fun(){
+A::fun();
+B::fun();
+}
+};
+
+Hybrid Inheritance:
+It is combination of more than one typr of inheritance.
+
+Data Hiding:
+It is concept in oops that confirms the security of members of class from unauthorized access.
+.It is technique of protecting the data members from being  manipulated or hacked from any other source.
+.It is also resources some complexity of the system.Data hiding can be  achieved through encapsulation, as encapsulation is the process of data hiding.
+.It gurantees restricted data access to class members and maintain object integrity.
+
+Private,Public and Protected:
+There are three access specifiers within a class.
+
+Abstraction:
+.It is  used to hid the complexity.
+.It indicates all the necessary characteristics of an objects that different from all other types of objects.
+.It concentrates on external aspect of an object.
+.It emphasizes on details that are important for the reader and many more.
+
+Types of Abstraction:
+.Procedural abstraction
+.Data abstraction
+
+Encapsulation:
+It binds the data and function together which keep from outside interference.It lead to data hiding.
+.It make system easier to operate by the user.
+
+Polymorphism:
+It means having more forms.It id ability of messsages to displayed in more than one form.
+It is divided into two types:
+.Compile time
+.Runtime/Dynamic
+
+Compile time Polymorphism:
+It is achieved by function overloading operator.
+Function Overloading:
+There are multiple function with same name but have different parameter than these function said to be overloaded.It can slso be differ by rules.
+
+Runtime Polymorphism:
+It is also know as dynamic polymorphism or late binding.In runtime, the function call is resolved at run time.
+Function Overriding:
+
+Function Overloading:
+We can change the way operators work for the user-defined types like objects and structure.
+
+Syntax of function overloading:
+class className{
+public
+returnType operator symbol(argument){
+...
+}
+};
+
+Operator overloading in Unary operators:
+It operate only one operand.The increment operator ++ and decrement operator --.
+class Count {
+public:
+int value;
+void operator ++ (){
+++value;
+}
+void operator ++ (int) {
+++value;
+}
+}; 
+
+Operator overloading in Binary Operator:
+It work on two operands.
+class Complex {
+public:
+int r,i;
+Complex operator +
+Complex temp;
+temp.r = r + obj.r;
+temp.i = r + obj.i;
+return temp;
+}
+};
+
+Operator Overloading:
+:: scope resolution
+. Member selection
+.* member selection through pointer to  function
+?: ternary operator
+
+Different approaches to operator Overloading:
+.Member Function
+.Non Member Function
+.Friend Function
+
+Function call operator:
+When user-defined class overloads the function call operator,operator(),it becomes a FunctionObject type.
+An object of such type can be used in function-call like expression.
+struct Linear{
+double a,b;
+double operator() (double x) const{
+return a*x +b;
+}
+};
+
+Runtime Polymorphism:
+.It is know as dynamic polymorphism or late binding.In this process, The function call is resolved at run time.
+.In contrast, to compile time or static polymorphism, the compiler deduces the obj at run time and then decides which function call to bind to the obj.It is implemented using method overriding.
+
+Method Overriding:
+.Inheritance is a feature of oop that allows us to create derived classes from base class.It inherit features of base class.
+.If the same function is defined in both derived and base class and we call this function using object of derived class,the function of derived class executed.
+.This is known as function over riding in c++.The function in derived class overrides the function in base class.
+
+Syntax:
+class B{
+public:
+void print(){
+cout<<"Base Function"<<endl;
+}
+};                                       D d1;
+class D:public B{                        B* ptr = &d1;
+public:                                  ptr->print ();
+void print(){
+cout<<"zderived Function"<<endl;
+}
+};
+
+Virtual Function:
+It is member function on in the base class that we expect to redefine in derived class.
+.It is used in base class in order to ensure that function is overridden.This especially applies to cases where a pointer of base class points to an obj of derived class.
+
+Syntax:
+class B{
+public:
+void print(){
+cout<<"Base Function"<<endl;
+}
+};
+
+class D:public B{
+public:
+void print(){
+cout<<"Derived Function"<<endl;
+}
+};
+
+Override Identifiers:
+.It specifies the member function of derived classes that override the member function of base class.
+.Override identifiers prompts the compiler to display error msg when these mistake are made.Otherwise,the program will simply compike but virual function will not be overriden.
+.Errors handled: incorrect names,different return typr, different parameters,No virtual function.
+
+Virtual Base Classes:
+It are used in virtual inheritance in a  way of preventing multiple "instances" of given class appearing in an inheritance hierarchy when using multiple inheritances.
+
+Pure virtual function and Abstract classes:
+.Pure virtusl function are used if a function doesn't have any use in base class but function must be implemented by all it's derived classes.
+.A class that contains a pure virtual function is known as abstract class.
+.We cannot create objects of an abstract class.However, we can derive classes from them, and use their data members and member functions (except pure virtual function).
+
+Syntax:
+class B{
+int a;
+public:
+virtual int fun()=0;
+};
+class D1:public B{
+int a;
+public:
+int fun() override{return a;}
+};
+class D2:public B{
+int a;
+public:
+int fun() override { return a;}
+};
+
+File Handling in oop:
+Create
+Open
+Write
+Read
+Close
+
+There are two methods:
+Using Constructor
+.add directory
+.Create file
+.For writing in file = ofstream
+.For reading in filr = ifstream
+.read/write
+
+Syntax:
+#include<iostream>
+#include<fstream>
+using namespace std;
+
+main(){
+ofstream write("D:\Setups/test.txt");  //Create a file to write
+write <<"I'm studying file handling"<<endl;
+write<<"111111111111111"<<endl;
+
+string st;
+ifstream read("abc.txt");
+getline(read,st);
+read>>st;
+cout<<st;
+}
+
+Open File Handling:
+Syntax:
+#include<iostream>
+#include<fstream>
+using namespace std;
+
+main(){
+ofstream write;
+write.open("test.txt");  //Create a file to write
+write <<"I'm studying file handling"<<endl;
+write<<"111111111111111"<<endl;
+write.close();
+
+string st;
+ifstream read;
+read.open("text.txt");
+getline(read,st);
+cout<<st;
+read.close();
+}
+
+Openning modes:
+ios::in reading file
+ios::out writing file
+ios::app everything will be written at end
+ios::trunc erases everything
+ios::ate will be described later
+ios::binary opens file in binary mode
+ios::nocreate open failed if file doesn't exist
+ios::noreplace opens failed if file already exist
+tellp=returns position of cursor
+seekp=used to move left right in file
+ios:: beg,end,cur while writing in file
+tellg=return the position of cursor
+seekg=used to move right while reading from the file

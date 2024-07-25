@@ -1,0 +1,775 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+void insert(char***& book, int &totalPages, int position);
+void insert(char***& book, int totalPages, int page, int position);
+void copy(char***& book, int totalPages, int FromPage, int ToPage, int FromLine, int ToLine, int FromWord, int ToWord, char*& clipboard);
+void Delete(char***& book, int& totalPages, int page, int line);
+void paste(char***& book, int& totalPages, char* clipboard, int atPage, int atLine, int afterWord);
+
+
+char* toString(char***& book, int totalPages) {
+    int size = 0;
+    char* ans=nullptr;
+    int line = 0;
+    int page = 0;
+    char* ch = &book[page][line][0];
+    while (*ch != 0) {
+        char* tmp = new char[size + 1];
+        for (int i = 0; i < size; i++)
+            tmp[i] = ans[i];
+        tmp[size] = *ch;
+        delete[] ans;
+        ans = tmp;
+        size++;
+        if (*ch == '\n') {
+            line++;
+            if (book[page][line] == nullptr) { //next page
+                page++;
+                line = 0;
+            }
+            if (*(ch + 1) != 0)
+                ch = &book[page][line][0];
+            else
+                ch++;
+        }
+        else
+            ch++;
+    }
+    char* tmp = new char[size + 1];
+    for (int i = 0; i < size; i++)
+        tmp[i] = ans[i];
+    tmp[size] = 0;
+    delete[] ans;
+    ans = tmp;
+    return ans;
+}
+
+void addPageHeader(char* line, int page) {
+    int index = 0;
+    for (index = 0; index < 10; index++)
+        line[index] = '-';
+    line[index++] = ' ';
+    line[index++] = 'P';
+    line[index++] = 'a';
+    line[index++] = 'g';
+    line[index++] = 'e';
+    line[index++] = ' ';
+    line[index++] = 48 + page;
+    line[index++] = ' ';
+    for (int i = 0; i < 10; i++)
+        line[index++] = '-';
+    line[index] = '\n';
+}
+
+int lineLength(char* ch) {   //excluding \n
+    int size = 0;
+    while (*ch != '\n' && *ch != 0) {
+        size++;
+        ch++;
+    }
+    return size;
+}
+
+int countLinesOnPage(char** page) {
+    int count = 0; 
+    while (page[count] != nullptr)
+        count++;
+    return count-1;
+}
+
+void makeBook(char* text, char***& book, int &totalPages) {
+    //allocate
+    totalPages = 0;
+    book = nullptr;
+    insert(book, totalPages,0);
+    
+
+    int textIndex = 0;
+    int wordIndex;
+    int lineIndex = 0;
+    char line[41] = "\0";
+    bool bookParse = true;
+    while (bookParse) {
+        //declare null word 
+        char word[20] = "\0";
+        wordIndex = 0;
+        while (text[textIndex] != 0 && text[textIndex] != ' ') {
+            //copy from text[] to word
+            word[wordIndex++] = text[textIndex++];
+        }
+        word[wordIndex++] = text[textIndex];
+        if (text[textIndex] != 0)
+            textIndex++;
+        //add word to line if space available
+        if (lineIndex + wordIndex - 1 <= 40) {
+            //add word to line
+            for (int i = 0; i < wordIndex; i++)
+                line[lineIndex++] = word[i];
+            wordIndex = 0;
+        }
+        if (lineIndex + wordIndex - 1 > 40 || text[textIndex] == 0) {
+            //copy what you have so far
+            int linesOnPage = countLinesOnPage(book[totalPages - 1]);
+            if (linesOnPage < 10) {
+                ////////////add line
+                insert(book, totalPages, totalPages, linesOnPage);
+                delete[] book[totalPages - 1][linesOnPage+1];
+                book[totalPages - 1][linesOnPage + 1] = new char[lineIndex];
+                if (line[lineIndex - 1] == ' ')
+                    line[lineIndex-1] = '\n';
+                ////////GET RID OF THIS LATER
+                //if (line[lineIndex - 1] == 0 && text[textIndex]==0)
+                //    line[lineIndex - 2] = 0;
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages - 1][linesOnPage + 1][ch] = line[ch];
+            }
+            else {
+                ////////add page
+                insert(book, totalPages, totalPages);
+                //add line to page
+                insert(book, totalPages , totalPages, 0);
+                delete[] book[totalPages-1][1];
+                book[totalPages-1][1] = new char[lineIndex];
+                if (line[lineIndex - 1] == ' ')
+                    line[lineIndex-1] = '\n';
+                //if (line[lineIndex - 1] == 0 && text[textIndex]==0)
+                //    line[lineIndex - 2] = '#';
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages-1][1][ch] = line[ch];
+               
+            }
+            //add extra word to line
+            for (int i = 0; i < 40; i++)
+                line[i] = 0;
+            lineIndex = 0;
+            for (int i = 0; i < wordIndex; i++)
+                line[lineIndex++] = word[i];
+
+            if (text[textIndex] == 0 && wordIndex == 0)
+                bookParse = false;
+        }
+    }
+}
+
+
+//insert page after position
+void insert(char*** &book, int &totalPages, int position) {           
+    char*** tmpBook = nullptr;
+    char** tmpPage = nullptr;
+    tmpBook = new char** [totalPages + 1];
+    //if page before has \0 remove it
+    if (position > 0) {
+        int numLinesOnPrevPg = countLinesOnPage(book[position-1]);
+        int lenLastLineOnPrevPg = lineLength(book[position-1][numLinesOnPrevPg]);
+        if (book[position - 1][numLinesOnPrevPg][lenLastLineOnPrevPg] == 0)
+            book[position - 1][numLinesOnPrevPg][lenLastLineOnPrevPg] = '\n';
+    }
+    //copy contents up to position
+    int page = 0;
+    while (page<position && page<totalPages){
+        int linesOnPage = countLinesOnPage(book[page])+1;
+        tmpPage = new char* [linesOnPage + 1];
+        for (int line = 0; line < linesOnPage; line++) {
+            //for each line assign array of same size and copy
+            int size = 0;
+            do {
+                size++;
+            } while (book[page][line][size - 1] != '\n');
+            tmpPage[line] = new char[size];
+            //copy
+            for (int j = 0; j < size; j++)
+                tmpPage[line][j] = book[page][line][j];
+        }
+        tmpPage[linesOnPage] = nullptr;
+        tmpBook[page] = tmpPage;  //assign page to book
+        page++;
+    }
+    // new + filler pages
+    int index = page;
+    while (index <= position) {
+        tmpPage = new char* [2];
+        tmpPage[0] = new char[29];
+        addPageHeader(tmpPage[0], index + 1);
+        if (index == position && page >= totalPages)
+            tmpPage[0][28] = 0;
+        tmpPage[1] = nullptr;
+        tmpBook[index] = tmpPage;
+        index++;
+    }
+    //copy contents after position
+    while (page<totalPages){
+        int linesOnPage = countLinesOnPage(book[page]);
+        tmpPage = new char* [linesOnPage + 1];
+        for (int line = 0; line < linesOnPage; line++) {
+            //for each line assign array of same size and copy
+            int size = 0;
+            do {
+                size++;
+            } while (book[page][line][size - 1] != '\n');
+            tmpPage[index] = new char[size];
+            //copy
+            for (int j = 0; j < size; j++)
+                tmpPage[index][j] = book[page][line][j];
+        }
+        tmpPage[linesOnPage] = nullptr;
+        tmpBook[page] = tmpPage;  //assign page to book
+        page++;
+    }
+    //deallocate
+    for (int i = 0; i < totalPages; i++) {
+        int linesOnPage = countLinesOnPage(book[i]) + 1;
+        for (int j = 0; j < linesOnPage; j++)
+            delete[] book[i][j];
+        delete[] book[i];
+    }
+    if (book!=nullptr)
+        delete[] book;
+    book = tmpBook;
+    totalPages++;
+}
+
+//insert line on page at position
+void insert(char*** &book, int totalPages, int page, int position) {
+    char** tmpPage = nullptr;
+    //find number of lines on page, dont do it if 10 lines (exc header)
+    int linesOnPage = countLinesOnPage(book[page-1]);
+    int lastLineSize = lineLength(book[page - 1][linesOnPage]);
+    //if line before it ends in \0 remove
+    if (book[page - 1][linesOnPage][lastLineSize] == 0)
+        book[page - 1][linesOnPage][lastLineSize] = '\n';
+  
+    if (linesOnPage < 10) {
+        tmpPage = new char* [1 + linesOnPage + 1 + 1];
+        //copy up to position or until no more lines(add extra lines in between)
+        int line = 0;
+        while (line <= position && line <= linesOnPage) {
+            int size = 0;
+            do {
+                size++;
+            } while (book[page - 1][line][size - 1] != '\n');
+            tmpPage[line] = new char[size];
+            //copy
+            for (int j = 0; j < size; j++)
+                tmpPage[line][j] = book[page - 1][line][j];
+            line++;
+        }
+        //add new line,create filler lines if necessary
+        int index = line;
+        while (index <= position + 1) {
+            int s = 1;
+            if (index == position + 1 && line > linesOnPage)
+                s = 2;
+            tmpPage[index] = new char[s];
+            tmpPage[index][0] = '\n';   //\n
+            if (s>1)
+                tmpPage[index][1] = 0;
+            index++;
+        }
+        //copy rest
+        while (line <= linesOnPage) {
+            int size = 0;
+            do {
+                size++;
+            } while (book[page - 1][line][size - 1] != '\n');
+            tmpPage[index] = new char[size];
+            //copy
+            for (int j = 0; j < size; j++)
+                tmpPage[index][j] = book[page - 1][line][j];
+            line++;
+            index++;
+        }
+        tmpPage[index] = nullptr;
+        //deallocate
+        for (int i = 0; i < linesOnPage ; i++)
+            delete[] book[page - 1][i];
+        delete[] book[page - 1];
+        book[page - 1] = tmpPage;
+        tmpPage = nullptr;
+        linesOnPage++;
+    }
+    else
+        cout << "cant insert line on page - already reached max limit of lines\n";
+}
+
+
+void copy(char***& book, int totalPages, int FromPage, int ToPage, int FromLine, int ToLine, int FromWord, int ToWord, char*& clipboard) {
+    clipboard = nullptr;
+    char* ch = book[FromPage - 1][FromLine];
+    int thisWord = 0;
+    while (thisWord < FromWord) {
+        ch++;
+        if (*ch == ' ')
+            thisWord++;
+    }
+    int thisPage = FromPage-1;
+    int thisLine = FromLine;
+    int size = 0;
+    while (!(thisPage == ToPage - 1 && thisLine == ToLine-1 && thisWord == ToWord+1) && ch!=nullptr) {  //\0
+        //copy up til position
+        char* tmp = new char[size + 1];
+        for (int i = 0; i < size; i++)
+            tmp[i] = clipboard[i];
+        tmp[size] = *ch;
+        if (*ch == ' ')
+            thisWord++;
+        if (*ch == '\n') {   //\n
+            thisWord++;
+            if (thisPage == ToPage - 1 && thisLine == ToLine - 1 && thisWord == ToWord + 1)
+                break;
+            tmp[size] = ' ';
+            thisLine++;
+            thisWord = 0;
+            if (book[thisPage][thisLine] == nullptr) {
+                thisPage++;
+                thisLine = 1;
+            }
+            if (thisPage < totalPages) {
+                if (thisLine <= countLinesOnPage(book[thisPage]))
+                    ch = book[thisPage][thisLine];
+            }
+        }
+        else
+            ch++;
+        size++;
+        if (clipboard != nullptr)
+            delete[] clipboard;
+        clipboard = tmp;
+    }
+    char* tmp = new char[size + 1];
+    for (int i = 0; i < size; i++)
+        tmp[i] = clipboard[i];
+    tmp[size] = 0;
+    delete[] clipboard;
+    clipboard = tmp;
+    cout << "\nclipboard:\n";
+    cout << clipboard;
+}
+
+
+//delete page
+void Delete(char***& book, int &totalPages, int page) {
+    int linesOnPage = countLinesOnPage(book[page - 1])+1;
+    for (int i = 0; i < linesOnPage; i++)
+        delete[] book[page - 1][i];
+    char*** tmpBook= new char**[totalPages-1];
+    int index = 0;
+    for (int i = 0; i < totalPages; i++) {
+        if (i != page - 1)
+            tmpBook[index++] = book[i];
+    }
+    delete[] book;
+    book = tmpBook;
+    totalPages--;
+}
+//delete line
+void Delete(char***& book, int &totalPages, int page, int line) {
+    delete[] book[page - 1][line];
+    char** prevLine = &book[page-1][line];
+    char** nextLine=&book[page-1][line+1];
+    int thisPage = page ;
+    do {
+        if (*nextLine != nullptr) {
+            *prevLine = *nextLine;
+            prevLine=nextLine;
+            nextLine++;
+        }
+        else {
+            if (thisPage+1 <= totalPages)
+                nextLine = &book[thisPage++][1];
+            else
+                *prevLine = nullptr;
+        }
+    } while (*prevLine != nullptr);
+    while (book[thisPage - 1][1] == nullptr)
+        thisPage--;
+    int linesOnLastPg = countLinesOnPage(book[thisPage - 1])+1;
+    char** tmpPage= new char*[linesOnLastPg+1];
+    for (int i = 0; i <= linesOnLastPg; i++)
+        tmpPage[i] = book[thisPage - 1][i];
+    tmpPage[linesOnLastPg] = nullptr;
+    //if deleting last line add\0
+    if (page == totalPages && line == linesOnLastPg)
+        tmpPage[line-1][lineLength(book[page - 1][line - 1])] = 0;
+    delete[] book[thisPage - 1];
+    book[thisPage-1] = tmpPage;
+    totalPages = thisPage;
+}
+
+void concatenateBooks(char***& book1, int totalPages1, char***& book2, int totalPages2, char***& newBook, int& newPages) {
+    newPages = totalPages1 + totalPages2;
+    newBook = new char** [newPages+1];
+    int page = 0;
+    while (page < totalPages1){
+        newBook[page] = book1[page];
+        page++;
+    }
+    //to remove \0
+    int numLines = countLinesOnPage(newBook[page - 1]);
+    int sizeOfLine = lineLength(newBook[page - 1][numLines]);
+    newBook[page - 1][numLines][sizeOfLine] = '\n'; //replace \0 with \n
+    int i = 0;
+    while (page < newPages) {
+        newBook[page] = book2[i++];
+        //change page header
+        addPageHeader(newBook[page][0], page + 1);
+        page++;
+    }
+    newBook[page] = nullptr;
+}
+
+
+int main() {
+
+    //int totalPages1 = 0;
+    //char*** book1;
+    char text[] =  "In a tiny village nestled between rolling hills and babbling brooks, there lived a peculiar cat named Whiskers. Whiskers wasn't your ordinary feline; he had a knack for solving mysteries. One day, the village's prized possession, the Giant Cheese Wheel, went missing. Whiskers, with his magnifying glass in paw and detective hat perched atop his head, embarked on a thrilling quest.His journey took him through meadows and over bridges until he stumbled upon a suspicious trail of cheesy paw prints leading to Farmer Brown's barn. Inside the barn, Whiskers discovered a group of mischievous mice having a cheese feast. Among them was a mouse named Munch, the mastermind behind the cheesy caper. However, instead of scolding them, Whiskers proposed a deal: they could have a cheese party every month as long as they promised not to pilfer the Giant Cheese Wheel.";
+    //makeBook(text, book1, totalPages1);
+    //int totalPages2 = 0;
+    //char*** book2;
+    //char text1[] = "From that day forward, the village enjoyed monthly cheese celebrations, and Whiskers became a hero. As for Munch and his mouse friends, they learned that sometimes, it's better to negotiate than to nibble. And so, peace reigned in the village, thanks to the clever detective work of Whiskers, the cheese-loving cat.";
+    //makeBook(text1, book2, totalPages2);
+    //int totalPages = 0;
+    //char*** book;
+    //concatenateBooks(book1, totalPages1, book2, totalPages2, book, totalPages);
+    //cout << toString(book, totalPages);
+
+    int totalPages = 0;
+    char*** book;
+    makeBook(text, book, totalPages);
+
+    //insert(book, totalPages, 3);
+    //insert(book, totalPages, 4, 0);
+    //cout << toString(book, totalPages);
+
+   char* clipboard;
+   copy(book, totalPages, 1, 2, 2, 4, 3, 5, clipboard);
+
+   ////paste(book, totalPages, clipboard, 2, 3, 2);
+   //cout << toString(book, totalPages);
+
+    //Delete(book, totalPages, 2);
+    //Delete(book, totalPages, 1, 3);
+    //cout << toString(book, totalPages);
+
+    for (int i = 0; i < totalPages; i++) {
+        int linesOnPage = countLinesOnPage(book[i]) + 1;
+        for (int j = 0; j < linesOnPage; j++)
+            delete[] book[i][j];
+        delete[] book[i];
+    }
+    delete[] book;
+    //delete[] clipboard;
+
+	return 0;
+}
+
+
+
+void paste(char***& book, int& totalPages, char* clipboard, int atPage, int atLine, int afterWord) {
+    ////////copy rest
+    int lastPg = totalPages - 1;
+    int toLine = countLinesOnPage(book[lastPg]);
+    while (toLine <= 0) {
+        lastPg -= 1;
+        toLine = countLinesOnPage(book[lastPg]);
+    }
+    int toWord = 0;
+    char* ch = book[lastPg][toLine];
+    while (*ch != 0) {
+        if (*ch == ' ')
+            toWord++;
+        ch++;
+    }
+    char* tmpClipboard;
+    copy(book, totalPages, atPage, totalPages, atLine, toLine + 1, afterWord, toWord, tmpClipboard);
+    cout << tmpClipboard;
+    char lineArr[41] = "\0";
+    ch = book[atPage - 1][atLine];
+    toWord = 0;
+    int lineIndex = 0;
+    while (toWord < afterWord && ch != 0) {
+        if (*ch == ' ' || *ch == 0)
+            toWord++;
+        lineArr[lineIndex++] = *ch;
+        ch++;
+    }
+    /////////deallocate rest
+    for (int i = atPage - 1; i < totalPages; i++) {
+        int linesOnPage = countLinesOnPage(book[i]) + 1;
+        int j = 0;
+        if (i == atPage - 1)
+            j = atLine;
+        for (; j < linesOnPage; j++)
+            delete[] book[i][j];
+        if (i != atPage - 1)
+            delete[] book[i];
+    }
+    totalPages = atPage;
+    char** tmpPage = new char* [atLine + 1];
+    for (int i = 0; i < atLine; i++)
+        tmpPage[i] = book[atPage - 1][i];
+    tmpPage[atLine] = nullptr;
+    delete[] book[atPage - 1];
+    book[atPage - 1] = tmpPage;
+    tmpPage = nullptr;
+    char*** tmpBook = new char** [totalPages];
+    for (int i = 0; i < totalPages; i++)
+        tmpBook[i] = book[i];
+    delete[] book;
+    book = tmpBook;
+    /////paste 
+    int wordIndex;
+    int textIndex = 0;
+    bool bookParse = true;
+    while (bookParse) {
+        //declare null word 
+        char word[20] = "\0";
+        wordIndex = 0;
+        while (clipboard[textIndex] != 0 && clipboard[textIndex] != ' ') {
+            //copy from text[] to word
+            word[wordIndex++] = clipboard[textIndex++];
+        }
+        word[wordIndex++] = clipboard[textIndex];
+        if (clipboard[textIndex] != 0)
+            textIndex++;
+        //add word to line if space available
+        if (lineIndex + wordIndex - 1 <= 40) {
+            //add word to line
+            for (int i = 0; i < wordIndex; i++)
+                lineArr[lineIndex++] = word[i];
+            wordIndex = 0;
+        }
+        if (lineIndex + wordIndex - 1 > 40 || clipboard[textIndex] == 0) {
+            //copy what you have so far
+            int linesOnPage = countLinesOnPage(book[totalPages - 1]);
+            if (linesOnPage < 10) {
+                ////////////add line
+                insert(book, totalPages, totalPages, linesOnPage);
+                delete[] book[totalPages - 1][linesOnPage + 1];
+                book[totalPages - 1][linesOnPage + 1] = new char[lineIndex];
+                if (lineArr[lineIndex - 1] == ' ')
+                    lineArr[lineIndex - 1] = '\n';
+                ////////GET RID OF THIS LATER
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages - 1][linesOnPage + 1][ch] = lineArr[ch];
+            }
+            else {
+                ////////add page
+                insert(book, totalPages, totalPages);
+                //add line to page
+                insert(book, totalPages, totalPages, 1);
+                delete[] book[totalPages - 1][1];
+                book[totalPages - 1][1] = new char[lineIndex];
+                if (lineArr[lineIndex - 1] == ' ')
+                    lineArr[lineIndex - 1] = '\n';
+                //if (lineArr[lineIndex - 1] == 0 && clipboard[textIndex] == 0)
+                //    lineArr[lineIndex - 2] = '#';
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages - 1][1][ch] = lineArr[ch];
+
+            }
+            //add extra word to line
+            for (int i = 0; i < 40; i++)
+                lineArr[i] = 0;
+            lineIndex = 0;
+            for (int i = 0; i < wordIndex; i++)
+                lineArr[lineIndex++] = word[i];
+
+            if (clipboard[textIndex] == 0 && wordIndex == 0)
+                bookParse = false;
+        }
+    }
+    ////paste back
+    //cout << toString(book, totalPages);
+    lineIndex = 0;
+    ch = book[totalPages - 1][countLinesOnPage(book[totalPages - 1])];
+    while (*ch != 0)
+        lineArr[lineIndex++] = *ch++;
+    lineArr[lineIndex++] = ' ';
+    Delete(book, totalPages, totalPages - 1, countLinesOnPage(book[totalPages - 1]));
+    textIndex = 0;
+    bookParse = true;
+    while (bookParse) {
+        //declare null word 
+        char word[20] = "\0";
+        wordIndex = 0;
+        while (tmpClipboard[textIndex] != 0 && tmpClipboard[textIndex] != ' ') {
+            //copy from text[] to word
+            word[wordIndex++] = tmpClipboard[textIndex++];
+        }
+        word[wordIndex++] = tmpClipboard[textIndex];
+        if (tmpClipboard[textIndex] != 0)
+            textIndex++;
+        //add word to line if space available
+        if (lineIndex + wordIndex - 1 <= 40) {
+            //add word to line
+            for (int i = 0; i < wordIndex; i++)
+                lineArr[lineIndex++] = word[i];
+            wordIndex = 0;
+        }
+        if (lineIndex + wordIndex - 1 > 40 || tmpClipboard[textIndex] == 0) {
+            //copy what you have so far
+            int linesOnPage = countLinesOnPage(book[totalPages - 1]);
+            if (linesOnPage < 10) {
+                ////////////add line
+                insert(book, totalPages, totalPages, linesOnPage);
+                delete[] book[totalPages - 1][linesOnPage + 1];
+                book[totalPages - 1][linesOnPage + 1] = new char[lineIndex];
+                if (lineArr[lineIndex - 1] == ' ')
+                    lineArr[lineIndex - 1] = '\n';
+                ////////GET RID OF THIS LATER
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages - 1][linesOnPage + 1][ch] = lineArr[ch];
+                cout << toString(book, totalPages);
+            }
+            else {
+                ////////add page
+                insert(book, totalPages, totalPages);
+                //add line to page
+                insert(book, totalPages, totalPages, 1);
+                delete[] book[totalPages - 1][1];
+                book[totalPages - 1][1] = new char[lineIndex];
+                if (lineArr[lineIndex - 1] == ' ')
+                    lineArr[lineIndex - 1] = '\n';
+                for (int ch = 0; ch < lineIndex; ch++)
+                    book[totalPages - 1][1][ch] = lineArr[ch];
+
+            }
+            //add extra word to line
+            for (int i = 0; i < 41; i++)
+                lineArr[i] = 0;
+            lineIndex = 0;
+            for (int i = 0; i < wordIndex; i++)
+                lineArr[lineIndex++] = word[i];
+
+            if (tmpClipboard[textIndex] == 0 && wordIndex == 0)
+                bookParse = false;
+        }
+    }
+}
+
+
+//void insertText(char***& book, int &totalPages, int page, int line, int word, char* text) {
+//    // go to given point, making extra pages/lines if needed 
+//    if (page > totalPages) 
+//            insert(book, totalPages, page-1);  //create page
+//    int numLines = countLinesOnPage(book[page-1]);
+//    if (line > numLines)
+//        insert(book, totalPages, page, line-1);
+//    char* tmpClipboard=nullptr;
+//    paste(book, totalPages, text, page, line, word);
+    // then if theres any text after that point copy it using copy()
+    //for copy find last line,page,word
+    //int lastPg = totalPages - 1;
+    //int toLine = countLinesOnPage(book[lastPg]);
+    //while (toLine <= 0) {
+    //    lastPg -= 1;
+    //    toLine = countLinesOnPage(book[lastPg]);
+    //}
+    //int toWord = 0;
+    //char* ch = book[lastPg][toLine];
+    //while (*ch != 0) {
+    //    if (*ch == ' ')
+    //        toWord++;
+    //    ch++;
+    //}
+    //char* tmpClipboard;
+    //copy(book, totalPages, page, totalPages , line, toLine + 1, word, toWord-1 ,tmpClipboard);
+    //////// replace below with paste(text)
+    //char lineArr[40] = "\0";
+    //ch = book[page-1][line];
+    //toWord = 0;
+    //int lineIndex = 0;
+    //while (toWord<word) {
+    //    if (*ch == ' ')
+    //        toWord++;
+    //    lineArr[lineIndex++] = *ch;
+    //    ch++;
+    //}
+    ////deallocate rest
+    //for (int i = page - 1; i < totalPages; i++) {
+    //    int linesOnPage = countLinesOnPage(book[i]) + 1;
+    //    int j = 0;
+    //    if (i == page - 1)
+    //        j = line;
+    //    for (; j < linesOnPage; j++)
+    //        delete[] book[i][j];
+    //    delete[] book[i];
+    //}
+    //delete[] book;
+    //// then start adding the insert text from this point using same logic  -- use makebook() logic
+    //int wordIndex;
+    //int textIndex = 0;
+    //bool bookParse = true;
+    //while (bookParse) {
+    //    //declare null word 
+    //    char word[20] = "\0";
+    //    wordIndex = 0;
+    //    while (text[textIndex] != 0 && text[textIndex] != ' ') {
+    //        //copy from text[] to word
+    //        word[wordIndex++] = text[textIndex++];
+    //    }
+    //    word[wordIndex++] = text[textIndex];
+    //    if (text[textIndex] != 0)
+    //        textIndex++;
+    //    //add word to line if space available
+    //    if (lineIndex + wordIndex - 1 <= 40) {
+    //        //add word to line
+    //        for (int i = 0; i < wordIndex; i++)
+    //            lineArr[lineIndex++] = word[i];
+    //        wordIndex = 0;
+    //    }
+    //    if (lineIndex + wordIndex - 1 > 40 || text[textIndex] == 0) {
+    //        //copy what you have so far
+    //        int linesOnPage = countLinesOnPage(book[totalPages - 1]);
+    //        if (linesOnPage < 10) {
+    //            ////////////add line
+    //            insert(book, totalPages, totalPages, linesOnPage + 1);
+    //            delete[] book[totalPages - 1][linesOnPage + 1];
+    //            book[totalPages - 1][linesOnPage + 1] = new char[lineIndex];
+    //            if (lineArr[lineIndex - 1] == ' ')
+    //                lineArr[lineIndex - 1] = 0;
+    //            ////////GET RID OF THIS LATER
+    //            if (lineArr[lineIndex - 1] == 0 && text[textIndex] == 0)
+    //                lineArr[lineIndex - 2] = '#';
+    //            for (int ch = 0; ch < lineIndex; ch++)
+    //                book[totalPages - 1][linesOnPage + 1][ch] = lineArr[ch];
+    //        }
+    //        else {
+    //            ////////add page
+    //            insert(book, totalPages, totalPages);
+    //            //add line to page
+    //            insert(book, totalPages, totalPages, 1);
+    //            delete[] book[totalPages - 1][1];
+    //            book[totalPages - 1][1] = new char[lineIndex];
+    //            if (lineArr[lineIndex - 1] == ' ')
+    //                lineArr[lineIndex - 1] = 0;
+    //            if (lineArr[lineIndex - 1] == 0 && text[textIndex] == 0)
+    //                lineArr[lineIndex - 2] = '#';
+    //            for (int ch = 0; ch < lineIndex; ch++)
+    //                book[totalPages - 1][1][ch] = lineArr[ch];
+
+    //        }
+    //        //add extra word to line
+    //        for (int i = 0; i < 40; i++)
+    //            lineArr[i] = 0;
+    //        lineIndex = 0;
+    //        for (int i = 0; i < wordIndex; i++)
+    //            lineArr[lineIndex++] = word[i];
+
+    //        if (text[textIndex] == 0 && wordIndex == 0)
+    //            bookParse = false;
+    //    }
+    //}
+    // and then use paste() to paste text after this point at next available space  -- havent done paste()
+    /*int lastLn = countLinesOnPage(book[totalPages - 1]);
+    int toWord = 0;
+    char* ch = book[totalPages-1][lastLn];
+    while (*ch != 0) {
+        if (*ch == ' ')
+            toWord++;
+        ch++;
+    }
+    paste(book, totalPages, tmpClipboard, totalPages - 1, lastLn, toWord);*/

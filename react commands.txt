@@ -1,0 +1,6 @@
+cd ..
+npx create-react-app-myapp
+npm start
+if error
+npm run build
+npm run start

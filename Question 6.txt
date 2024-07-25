@@ -1,0 +1,688 @@
+Question 6
+#include <iostream>
+
+class RentalReservation {
+private:
+    // ... (same instance variables as before)
+
+    // Dynamic car management (simplified without std::vector or std::map)
+    static const int MAX_CARS = 100; // Assume a maximum of 100 car models
+    static int numCars;
+    static std::string available_cars[MAX_CARS];
+    static double car_rates[MAX_CARS][2]; // {base_rate, peak_rate}
+
+    // ... (helper functions, adjusted for no standard library use)
+
+public:
+    // ... (constructor, destructor)
+
+    // Validation methods (adjusted for no regex)
+    bool validateReservationID(const std::string& id) const;
+    bool validateCarMakeAndModel(const std::string& model) const;
+
+    // Calculation methods 
+    double calculateRentalRate() const; 
+    double calculateRentalTotal() const;
+
+    // ... (getReservationDetails, updateReservation methods)
+
+    // Admin car management (simplified)
+    static void addCarModel(const std::string& model, double base_rate, double peak_rate);
+    static void removeCarModel(const std::string& model);
+    // ... (Other methods, adjusted as needed)
+};
+
+// ... (Implementations of the methods outside the class)
+
+int RentalReservation::numCars = 0; // Initialize static variable
+
+#include <iostream>
+#include <cstring> // For string manipulation (strcpy, strlen)
+
+// ... (RentalReservation class as before, with its member function implementations)
+
+int main() {
+    // Initialize some sample car models and rates
+    RentalReservation::addCarModel("Toyota Camry", 25.0, 35.0);
+    RentalReservation::addCarModel("Honda Civic", 22.0, 30.0);
+    RentalReservation::addCarModel("Ford Mustang", 40.0, 55.0);
+
+    while (true) {
+        std::cout << "\nCar Rental System\n";
+        std::cout << "1. Create Reservation\n";
+        std::cout << "2. Update Reservation\n";
+        std::cout << "3. View Available Cars\n";
+        std::cout << "4. Exit\n";
+        std::cout << "Enter your choice: ";
+
+        int choice;
+        std::cin >> choice;
+
+        if (choice == 1) {
+            // ... (Code to get user input for reservation details and create a RentalReservation object)
+        } else if (choice == 2) {
+            // ... (Code to get reservation ID, find the reservation, and allow updates)
+        } else if (choice == 3) {
+            // Print available cars and their rates
+            RentalReservation::printAvailableCars(); 
+        } else if (choice == 4) {
+            break;
+        } else {
+            std::cout << "Invalid choice. Please try again.\n";
+        }
+    }
+    
+    return 0;
+}
+
+//question no 5
+#include <iostream>
+#include <cstring> 
+
+class RentalReservation {
+private:
+    char reservation_id[15]; // 8 alphanumeric + 2 special + 4 digits + null terminator
+    char customer_name[50];
+    char car_make_model[50];
+    char pickup_date[20];   // Assuming format like "YYYY-MM-DD HH:MM"
+    char return_date[20];
+    double rental_duration; // In hours
+    double rental_rate;
+    double rental_total;
+    char additional_services[100]; // Comma-separated list of services
+    int customer_age;
+
+    // ... (Static car management arrays as before)
+
+public:
+    // Constructor (with input validation)
+    RentalReservation(const char* res_id, const char* cust_name, const char* car_model,
+                     const char* pickup, const char* ret, const char* services, int age) 
+        : customer_age(age), rental_duration(0), rental_rate(0), rental_total(0) 
+    {
+        if (validateReservationID(res_id) && validateCarMakeAndModel(car_model)) {
+            strcpy(reservation_id, res_id);
+            strcpy(customer_name, cust_name);
+            strcpy(car_make_model, car_model);
+            strcpy(pickup_date, pickup);
+            strcpy(return_date, ret);
+            strcpy(additional_services, services);
+
+            // Calculate rental duration, rate, and total (you'll need to implement these)
+            calculateRentalDuration();
+            calculateRentalRate();
+            calculateRentalTotal();
+        } else {
+            std::cerr << "Invalid reservation details. Please try again.\n";
+            // Handle invalid input (e.g., set to default values or throw an exception)
+        }
+    }
+
+    // ... (Other methods: validateReservationID, validateCarMakeAndModel, 
+    //      calculateRentalDuration, calculateRentalRate, calculateRentalTotal,
+    //      getReservationDetails, updateReservation, addCarModel, removeCarModel, etc.)
+};
+
+// ... (Implementations of all member functions)
+
+int main() {
+    // ... (Initialization of car models and rates)
+
+    while (true) {
+        // ... (Main menu and user interaction as before)
+
+        if (choice == 1) {
+            // Get user input for reservation details
+            char res_id[15], cust_name[50], car_model[50], pickup[20], ret[20], services[100];
+            int age;
+
+            std::cout << "Enter reservation ID: ";
+            std::cin >> res_id;
+            // ... (Get other details from the user)
+
+            // Create reservation object
+            RentalReservation reservation(res_id, cust_name, car_model, pickup, ret, services, age);
+
+            // ... (Store the reservation, print confirmation, etc.)
+        } 
+        // ... (Handle other menu choices)
+    }
+
+    return 0;
+}
+
+#include <iostream>
+#include <cstring>
+#include <ctime> // For time calculations
+
+// ... (RentalReservation class declaration as before)
+
+// Method Implementations
+
+bool RentalReservation::validateReservationID(const char* id) const {
+    // Check length and format (8 alphanumeric, 2 special, 4 digits)
+    if (strlen(id) != 14) return false;
+    for (int i = 0; i < 8; ++i) {
+        if (!isalnum(id[i])) return false;
+    }
+    for (int i = 8; i < 10; ++i) {
+        if (isalnum(id[i])) return false; // Must be special characters
+    }
+    int digitSum = 0;
+    for (int i = 10; i < 14; ++i) {
+        if (!isdigit(id[i])) return false;
+        digitSum += id[i] - '0';
+    }
+    return digitSum < 18;
+}
+
+bool RentalReservation::validateCarMakeAndModel(const char* model) const {
+    for (int i = 0; i < numCars; ++i) {
+        if (strcmp(model, available_cars[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void RentalReservation::calculateRentalDuration() {
+    // ... (Implementation to calculate rental duration in hours based on pickup_date and return_date)
+    // You'll need to parse the date strings and use time calculations (e.g., difftime)
+}
+
+void RentalReservation::calculateRentalRate() {
+    // ... (Implementation to determine the rate based on car model, duration, age, peak/off-peak)
+    // Use the car_rates array to look up rates
+}
+
+void RentalReservation::calculateRentalTotal() {
+    rental_total = rental_duration * rental_rate;
+    // ... (Add costs for additional services)
+}
+
+// ... (Implementations for getReservationDetails, updateReservation, addCarModel, removeCarModel)
+
+#include <iostream>
+#include <cstring>
+
+// ... (RentalReservation class declaration and other method implementations)
+
+// Method Implementations (continued)
+
+void RentalReservation::getReservationDetails() const {
+    std::cout << "Reservation ID: " << reservation_id << std::endl;
+    std::cout << "Customer Name: " << customer_name << std::endl;
+    std::cout << "Car Make and Model: " << car_make_model << std::endl;
+    std::cout << "Pickup Date: " << pickup_date << std::endl;
+    std::cout << "Return Date: " << return_date << std::endl;
+    std::cout << "Rental Duration (hours): " << rental_duration << std::endl;
+    std::cout << "Rental Rate (per hour): " << rental_rate << std::endl;
+    std::cout << "Rental Total: " << rental_total << std::endl;
+    std::cout << "Additional Services: " << additional_services << std::endl;
+}
+
+void RentalReservation::updateReservation(const char* new_pickup, const char* new_return,
+                                         const char* new_car_model, const char* new_services) {
+    // Validate new input
+    if (!validateCarMakeAndModel(new_car_model)) {
+        std::cerr << "Invalid car model. Update failed.\n";
+        return;
+    }
+
+    // Update details
+    strcpy(pickup_date, new_pickup);
+    strcpy(return_date, new_return);
+    strcpy(car_make_model, new_car_model);
+    strcpy(additional_services, new_services);
+
+    // Recalculate duration, rate, and total
+    calculateRentalDuration();
+    calculateRentalRate();
+    calculateRentalTotal();
+
+    std::cout << "Reservation updated successfully!\n";
+}
+
+void RentalReservation::addCarModel(const char* model, double base_rate, double peak_rate) {
+    if (numCars < MAX_CARS) {
+        strcpy(available_cars[numCars], model);
+        car_rates[numCars][0] = base_rate;
+        car_rates[numCars][1] = peak_rate;
+        numCars++;
+    } else {
+        std::cerr << "Cannot add more car models. Maximum limit reached.\n";
+    }
+}
+
+void RentalReservation::removeCarModel(const char* model) {
+    for (int i = 0; i < numCars; ++i) {
+        if (strcmp(model, available_cars[i]) == 0) {
+            // Shift remaining elements to fill the gap
+            for (int j = i; j < numCars - 1; ++j) {
+                strcpy(available_cars[j], available_cars[j + 1]);
+                car_rates[j][0] = car_rates[j + 1][0];
+                car_rates[j][1] = car_rates[j + 1][1];
+            }
+            numCars--;
+            std::cout << "Car model removed successfully.\n";
+            return;
+        }
+    }
+    std::cerr << "Car model not found.\n";
+}
+
+//question no 4
+#include <iostream>
+#include <string>
+#include <limits> // For input validation
+
+// Constants (Adjust values as needed)
+const int MAX_USERS = 100;
+const int MAX_BILLS = 50;
+const int MAX_ADMINS = 10;
+
+class BankAccount {
+public:
+    std::string accountNumber;
+    std::string pin;
+    double balance;
+
+    BankAccount(const std::string& accNo, const std::string& pinCode, double initialBalance)
+        : accountNumber(accNo), pin(pinCode), balance(initialBalance) {}
+};
+
+class Bank {
+public:
+    BankAccount accounts[MAX_USERS];
+    int numAccounts = 0;
+
+    void openAccount();
+    void viewAccountDetails() const;
+    void depositCash(double amount);
+    void withdrawCash(double amount);
+    void payBill(double amount);
+};
+
+class ATM {
+public:
+    void validateCardAndPin() const;
+    void withdrawCash(Bank& bank, double amount);
+    void changePin(Bank& bank);
+    void checkBalance(const Bank& bank) const;
+};
+
+class Administrator {
+public:
+    std::string username;
+    std::string password;
+
+    Administrator(const std::string& user, const std::string& pass)
+        : username(user), password(pass) {}
+
+    void processBillPayments() const; 
+    void processAccountOpenings() const;
+};
+
+// ... (Implementations of member functions for Bank, ATM, Administrator)
+
+int main() {
+    Bank bank;
+    ATM atm;
+    Administrator admin("admin", "password"); // Sample admin credentials
+
+    // ... (Initialize accounts, bills, etc. as needed)
+
+    while (true) {
+        // ... (Main menu, bank section, ATM section, admin section, exit logic)
+    }
+
+    return 0;
+}
+#include <iostream>
+#include <string>
+
+// ... (Constants MAX_USERS, MAX_BILLS, MAX_ADMINS remain the same)
+
+class BankAccount {
+public:
+    // ... (BankAccount class remains the same)
+};
+
+class Bank {
+public:
+    BankAccount accounts[MAX_USERS];
+    int numAccounts = 0;
+
+    void openAccount() {
+        // ... (Implementation to get account details from user and add to accounts)
+    }
+  
+  void viewAccountDetails() const {
+    std::string accNo;
+    std::cout << "Enter account number: ";
+    std::cin >> accNo;
+    //Search for account and display details
+  }
+
+    // ... (Other member functions for deposit, withdraw, payBill)
+
+private:
+    bool isValidAccountNumber(const std::string& accNo) const {
+        // Check if the account number exists in the accounts array
+        for (int i = 0; i < numAccounts; ++i) {
+            if (accounts[i].accountNumber == accNo) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+class ATM {
+public:
+    void validateCardAndPin(const Bank& bank) const {
+        std::string accNo, pin;
+        int attempts = 0;
+
+        while (attempts < 3) {
+            std::cout << "Enter account number: ";
+            std::cin >> accNo;
+            std::cout << "Enter PIN: ";
+            std::cin >> pin;
+
+            for (int i = 0; i < bank.numAccounts; ++i) {
+                if (bank.accounts[i].accountNumber == accNo && bank.accounts[i].pin == pin) {
+                    std::cout << "Authentication successful.\n";
+                    return; 
+                }
+            }
+            std::cout << "Invalid account number or PIN. Please try again.\n";
+            attempts++;
+        }
+        std::cout << "Too many incorrect attempts. Exiting ATM.\n";
+    }
+
+    // ... (Other ATM functions: withdrawCash, changePin, checkBalance)
+};
+
+class Administrator {
+public:
+    // ... (Administrator class remains the same)
+
+private:
+    bool authenticate(const std::string& enteredUsername, const std::string& enteredPassword) const {
+        return (username == enteredUsername && password == enteredPassword);
+    }
+};
+
+// ... (Implementations for Bank, ATM, and Administrator member functions)
+
+int main() {
+    // ... (Same as before, without using global variables)
+}
+
+question no 3
+#include <iostream>
+
+void printSpaces(int numSpaces) {
+    if (numSpaces == 0) return;
+    std::cout << " ";
+    printSpaces(numSpaces - 1);
+}
+
+void printChars(int numChars, char ch) {
+    if (numChars == 0) return;
+    std::cout << ch;
+    printChars(numChars - 1, ch);
+}
+
+void printPatternLine(int numChars, char ch, int totalWidth) {
+    printSpaces((totalWidth - numChars) / 2); // Center the characters
+    printChars(numChars, ch);
+    std::cout << std::endl;
+}
+
+void printPattern(int currentLine, int totalLines) {
+    if (currentLine > totalLines) return;
+
+    int numChars = 2 * currentLine - 1;
+    printPatternLine(numChars, '*', 11); // Assuming total width is 11 (adjust as needed)
+
+    printPattern(currentLine + 1, totalLines);
+}
+
+int main() {
+    printPattern(1, 5); // Print 5 lines of the pattern
+    return 0;
+}
+
+question no 2
+#include <iostream>
+
+char* smallest_substring_with_k_occurrences(const char *s, const char *t, int k) {
+    int m = strlen(s), n = strlen(t);
+    if (m < n * k) return nullptr; // Not enough chars in s to satisfy condition
+
+    // Frequency maps for t and the current window
+    int tCount[256] = {0}, windowCount[256] = {0};
+    for (int i = 0; i < n; ++i) {
+        tCount[t[i]] += k; 
+    }
+
+    int have = 0, need = n; // Track how many unique chars in t have enough occurrences
+    int start = 0, end = 0;  // Window indices
+    int minLen = m + 1, minStart = 0; // Store the result
+
+    while (end < m) {
+        if (tCount[s[end]] > 0) { // Check if char is needed
+            windowCount[s[end]]++;
+            if (windowCount[s[end]] == tCount[s[end]]) {
+                have++;
+            }
+        }
+        end++;
+
+        // Try to shrink the window if we have enough of all chars in t
+        while (have == need) {
+            if (end - start < minLen) {
+                minLen = end - start;
+                minStart = start;
+            }
+            
+            if (tCount[s[start]] > 0) {
+                windowCount[s[start]]--;
+                if (windowCount[s[start]] < tCount[s[start]]) {
+                    have--;
+                }
+            }
+            start++;
+        }
+    }
+
+    if (minLen == m + 1) return nullptr; // No substring found
+    
+    // Copy the result substring into a new char array
+    char* result = new char[minLen + 1]; 
+    strncpy(result, s + minStart, minLen);
+    result[minLen] = '\0'; // Null-terminate
+    return result;
+}
+
+int main() {
+    // Test Cases (same as the examples in the problem statement)
+    const char* s1 = "ADOBECODEBANC";
+    const char* t1 = "ABC";
+    int k1 = 1;
+    char* result1 = smallest_substring_with_k_occurrences(s1, t1, k1);
+    if (result1) {
+        std::cout << "Smallest substring for test case 1: " << result1 << std::endl;
+        delete[] result1; // Deallocate the memory
+    } else {
+        std::cout << "No substring found for test case 1.\n";
+    }
+
+    // ... (Similarly for the other test cases)
+
+    return 0;
+}
+
+#include <iostream>
+#include <cstring>
+
+// ... (smallest_substring_with_k_occurrences function implementation as before)
+
+int main() {
+    char s[100], t[50]; // Assuming maximum lengths for s and t
+    int k;
+
+    std::cout << "Enter string s: ";
+    std::cin.getline(s, 100); // Use getline to read the entire line
+
+    std::cout << "Enter string t: ";
+    std::cin.getline(t, 50);
+
+    std::cout << "Enter value for k: ";
+    std::cin >> k;
+
+    char* result = smallest_substring_with_k_occurrences(s, t, k);
+    if (result) {
+        std::cout << "Smallest substring: " << result << std::endl;
+        delete[] result; // Deallocate memory
+    } else {
+        std::cout << "No substring found.\n";
+    }
+
+    return 0;
+}
+
+
+//question 1
+
+#include <iostream>
+
+int maxProfit(int* prices, int size) {
+    if (size <= 1) return 0;
+
+    // Dynamically allocate 2D array for DP
+    int** dp = new int* [4];
+    for (int i = 0; i < 4; ++i) {
+        dp[i] = new int[size];
+    }
+
+    // Base cases
+    for (int k = 0; k <= 3; ++k) {
+        dp[k][0] = 0;
+    }
+    for (int i = 0; i < size; ++i) {
+        dp[0][i] = 0;
+    }
+
+    for (int k = 1; k <= 3; ++k) {
+        int maxDiff = -prices[0];
+        for (int i = 1; i < size; ++i) {
+            int noTransaction = dp[k][i - 1];
+            int sellToday = prices[i] + maxDiff;
+            dp[k][i] = (noTransaction > sellToday) ? noTransaction : sellToday;
+
+            int buyToday = dp[k - 1][i - 2] - prices[i];
+            maxDiff = (maxDiff > buyToday) ? maxDiff : buyToday;
+        }
+    }
+
+    int max_profit = dp[3][size - 1];
+
+    // Deallocate the dynamically allocated memory
+    for (int i = 0; i < 4; ++i) {
+        delete[] dp[i];
+    }
+    delete[] dp;
+
+    return max_profit;
+}
+
+int main() {
+    int size;
+    std::cout << "Enter the number of days: ";
+    std::cin >> size;
+
+    // Input validation for size
+    if (size <= 0) {
+        std::cerr << "Invalid number of days. Please enter a positive integer.\n";
+        return 1; // Exit with an error code
+    }
+
+    int* prices = new int[size]; // Dynamically allocate array
+
+    std::cout << "Enter the stock prices for each day:\n";
+    for (int i = 0; i < size; ++i) {
+        std::cin >> prices[i];
+    }
+
+    int max_profit = maxProfit(prices, size);
+    std::cout << "Maximum profit: " << max_profit << std::endl;
+
+    delete[] prices; // Deallocate memory
+    return 0;
+}
+
+
+//question 3
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+
+// Function to print a specific character a given number of times
+void printChar(char c, int count) {
+    for (int i = 0; i < count; ++i) {
+        cout << c;
+    }
+}
+
+// Function to print the clock pattern
+void printClock(int radius) {
+    int diameter = 2 * radius + 1;
+    int center = radius;
+
+    for (int i = 0; i < diameter; ++i) {
+        for (int j = 0; j < diameter; ++j) {
+            if (i == center && j == center) {
+                cout << "O"; // Center of the clock
+            }
+            else if (i == 0 && j == center) {
+                cout << "12"; // Top (12 o'clock)
+            }
+            else if (i == center && j == diameter - 1) {
+                cout << "3"; // Right (3 o'clock)
+            }
+            else if (i == diameter - 1 && j == center) {
+                cout << "6"; // Bottom (6 o'clock)
+            }
+            else if (i == center && j == 0) {
+                cout << "9"; // Left (9 o'clock)
+            }
+            else {
+                // Calculate distance from the center
+                int dx = j - center;
+                int dy = i - center;
+                if (dx * dx + dy * dy <= radius * radius) {
+                    cout << '*'; // Part of the circle
+                }
+                else {
+                    cout << ' '; // Outside the circle
+                }
+            }
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    int radius;
+    cout << "Enter the radius for the clock: ";
+    cin >> radius;
+    printClock(radius);
+    return 0;
+}
+
